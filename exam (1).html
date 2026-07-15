@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Senior Accountant Test</title>
+<style>
+  :root{
+    --ink:#14213d;
+    --ink-soft:#3a4a6b;
+    --paper:#f6f4ee;
+    --card:#ffffff;
+    --line:#dcd7c9;
+    --brass:#a9822c;
+    --brass-deep:#8a6a1f;
+    --danger:#a13d2c;
+    --danger-bg:#fbeae6;
+    --ok:#3a6b4a;
+    --ok-bg:#eaf3ec;
+    --mono: 'Courier New', ui-monospace, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 42px 42px;
+    background-attachment:fixed;
+    color:var(--ink);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    min-height:100vh;
+    direction:ltr;
+  }
+  .en{ direction:ltr; text-align:left; font-family: Georgia, 'Times New Roman', serif; }
+  ::selection{ background: var(--brass); color:#fff; }
+
+  /* ===== Top bar ===== */
+  #topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--ink); color:#fff;
+    padding:10px 22px;
+    font-family: 'Segoe UI', Tahoel, Arial, sans-serif;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+  }
+  #topbar .brand{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.3px;}
+  #topbar .brand .dot{ width:9px;height:9px;border-radius:50%; background:var(--brass);}
+  #timer{
+    font-family:var(--mono); font-size:20px; font-weight:700;
+    background:rgba(255,255,255,.08); padding:6px 16px; border-radius:6px;
+    border:1px solid rgba(255,255,255,.15);
+    letter-spacing:1px;
+  }
+  #timer.low{ background:var(--danger); border-color:var(--danger); }
+  #violations-badge{
+    font-family:'Segoe UI', Tahel, Arial, sans-serif; font-size:13px;
+    background:rgba(255,255,255,.08); padding:6px 12px; border-radius:6px;
+    border:1px solid rgba(255,255,255,.15);
+  }
+
+  /* ===== Layout ===== */
+  .wrap{ max-width:820px; margin:0 auto; padding:26px 18px 90px; }
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:4px;
+    padding:28px 30px; margin-bottom:22px;
+    box-shadow: 0 1px 0 var(--line);
+  }
+  h1{ font-size:26px; margin:0 0 4px; }
+  .sub{ color:var(--ink-soft); font-family:'Segoe UI',Tahel,Arial,sans-serif; font-size:14px; margin-bottom:18px;}
+  .eyebrow{
+    font-family:'Segoe UI',Tahel,Arial,sans-serif; font-size:12px; letter-spacing:2px;
+    color:var(--brass-deep); text-transform:uppercase; font-weight:700; margin-bottom:6px;
+  }
+  .section-title{
+    font-size:19px; color:var(--ink); border-bottom:2px solid var(--brass);
+    display:inline-block; padding-bottom:4px; margin:0 0 18px;
+  }
+  .q{ margin-bottom:22px; padding-bottom:20px; border-bottom:1px dashed var(--line); }
+  .q:last-child{ border-bottom:none; }
+  .q-num{ font-family:var(--mono); color:var(--brass-deep); font-weight:700; margin-left:6px;}
+  .q-text{ font-size:16px; line-height:1.6; margin-bottom:12px; }
+  .opts{ display:flex; flex-direction:column; gap:8px; }
+  label.opt{
+    display:flex; align-items:flex-start; gap:10px; padding:10px 14px;
+    border:1px solid var(--line); border-radius:4px; cursor:pointer;
+    font-family:Georgia,serif; direction:ltr; text-align:left;
+    transition: border-color .15s, background .15s;
+  }
+  label.opt:hover{ border-color:var(--brass); background:#fbf8f0; }
+  label.opt input{ margin-top:3px; accent-color:var(--brass-deep); }
+  label.opt.selected{ border-color:var(--brass-deep); background:#fdf6e6; }
+  textarea{
+    width:100%; min-height:110px; font-family:var(--mono); font-size:14px;
+    padding:12px; border:1px solid var(--line); border-radius:4px; resize:vertical;
+    direction:ltr; text-align:left; background:#fffdf8;
+  }
+  table.acct{ width:100%; border-collapse:collapse; margin-top:10px; font-family:'Segoe UI',Tahel,Arial,sans-serif; font-size:14px;}
+  table.acct th{ background:var(--ink); color:#fff; padding:8px 10px; text-align:left; font-weight:600;}
+  table.acct td{ border:1px solid var(--line); padding:0; }
+  table.acct td.acct-name{ padding:8px 10px; background:#fbf9f4; white-space:nowrap; direction:ltr; text-align:left; }
+  table.acct input{ width:100%; border:none; padding:8px 10px; font-family:inherit; font-size:14px; background:transparent; }
+  table.acct input:focus{ outline:2px solid var(--brass); outline-offset:-2px; background:#fffdf5;}
+
+  .btn{
+    font-family:'Segoe UI',Tahel,Arial,sans-serif; font-weight:700; font-size:15px;
+    padding:13px 26px; border-radius:4px; border:none; cursor:pointer;
+    background:var(--ink); color:#fff; letter-spacing:.3px;
+  }
+  .btn:hover{ background:#243357; }
+  .btn.brass{ background:var(--brass-deep); }
+  .btn.brass:hover{ background:#755618; }
+  .btn.outline{ background:transparent; color:var(--ink); border:1px solid var(--ink); }
+  .btn:disabled{ opacity:.5; cursor:not-allowed; }
+
+  /* ===== Start screen ===== */
+  #start-screen{
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  #start-screen .card{ max-width:560px; }
+  ul.rules{ font-family:'Segoe UI',Tahel,Arial,sans-serif; font-size:14.5px; line-height:1.9; color:var(--ink-soft); padding-right:20px; margin:14px 0 22px;}
+  ul.rules li::marker{ color:var(--brass-deep); }
+  #start-screen input[type="text"], #start-screen input[type="tel"]{
+    width:100%; padding:12px 14px; font-size:16px; border:1px solid var(--line);
+    border-radius:4px; font-family:'Segoe UI',Tahoma,Arial,sans-serif; margin-bottom:12px;
+    text-align:left; direction:ltr;
+  }
+  #hidden-note{ font-size:12px; color:#999; margin-top:14px; }
+
+  /* ===== Floating calculator ===== */
+  #calc-toggle{
+    position:fixed; bottom:24px; left:24px; z-index:60;
+    width:56px; height:56px; border-radius:50%; border:none;
+    background:var(--brass-deep); color:#fff; font-size:24px; cursor:pointer;
+    box-shadow:0 4px 14px rgba(0,0,0,.25);
+  }
+  #calc-toggle:hover{ background:#755618; }
+  #calc-panel{
+    position:fixed; bottom:90px; left:24px; z-index:60;
+    width:240px; background:var(--ink); border-radius:8px; padding:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35); display:none;
+    font-family:var(--mono);
+  }
+  #calc-panel.open{ display:block; }
+  #calc-display{
+    background:#0e1830; color:#fff; text-align:left; padding:12px 10px;
+    border-radius:4px; font-size:20px; margin-bottom:10px; min-height:28px; word-break:break-all;
+    direction:ltr;
+  }
+  .calc-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+  .calc-grid button{
+    padding:12px 0; font-size:15px; border:none; border-radius:4px; cursor:pointer;
+    background:#243357; color:#fff; font-family:var(--mono);
+  }
+  .calc-grid button:hover{ background:#324371; }
+  .calc-grid button.op{ background:var(--brass-deep); }
+  .calc-grid button.op:hover{ background:#755618; }
+  .calc-grid button.eq{ background:var(--ok); grid-column: span 2; }
+  .calc-grid button.clear{ background:var(--danger); }
+
+  /* ===== Warning modal ===== */
+  #warn-overlay{
+    position:fixed; inset:0; background:rgba(20,33,61,.75); z-index:100;
+    display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  #warn-overlay.show{ display:flex; }
+  #warn-box{
+    background:#fff; border-radius:6px; max-width:440px; width:100%; padding:28px;
+    border-top:6px solid var(--danger); text-align:center;
+    font-family:'Segoe UI',Tahel,Arial,sans-serif;
+  }
+  #warn-box h2{ color:var(--danger); margin:0 0 10px; font-size:20px;}
+  #warn-box p{ color:var(--ink-soft); line-height:1.7; font-size:14.5px; }
+  #warn-box .btn{ margin-top:14px; }
+
+  /* ===== Submit / result screen ===== */
+  #result-screen .card{ max-width:640px; margin:0 auto; }
+  .score-badge{
+    font-family:var(--mono); font-size:42px; font-weight:700; color:var(--brass-deep);
+    text-align:center; margin:6px 0 18px;
+  }
+  .kv{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px dashed var(--line); font-family:'Segoe UI',Tahel,Arial,sans-serif; font-size:14.5px;}
+  .kv b{ color:var(--ink); }
+  pre#result-dump{
+    background:#fffdf8; border:1px solid var(--line); padding:14px; font-size:12px;
+    max-height:260px; overflow:auto; direction:ltr; text-align:left; border-radius:4px;
+    font-family:var(--mono); white-space:pre-wrap;
+  }
+  .actions{ display:flex; gap:10px; margin-top:18px; flex-wrap:wrap; }
+
+  /* ===== Review list ===== */
+  .rv-item{
+    border-right:4px solid var(--ok); background:var(--ok-bg);
+    border-radius:4px; padding:12px 16px; margin-bottom:10px;
+    font-family:'Segoe UI',Tahoma,Arial,sans-serif;
+  }
+  .rv-item.wrong{ border-right-color:var(--danger); background:var(--danger-bg); }
+  .rv-item .rv-head{ display:flex; justify-content:space-between; align-items:center; font-size:13.5px; font-weight:700; margin-bottom:4px;}
+  .rv-item.wrong .rv-head .tag{ color:var(--danger); }
+  .rv-item:not(.wrong) .rv-head .tag{ color:var(--ok); }
+  .rv-item .rv-q{ font-family:Georgia,serif; font-size:14.5px; margin-bottom:6px; direction:ltr; text-align:left; }
+  .rv-item .rv-ans{ font-size:13.5px; direction:ltr; text-align:left; }
+  .rv-item .rv-ans b{ font-weight:700; }
+</style>
+</head>
+<body>
+
+<!-- ================= START SCREEN ================= -->
+<div id="start-screen">
+  <div class="card">
+    <div class="eyebrow">Accountant Recruitment · Timed Assessment</div>
+    <h1>Senior Accountant Test</h1>
+    <div class="sub">Duration: 30 minutes &nbsp;|&nbsp; Questions: 16 &nbsp;|&nbsp; Language: Simple English</div>
+
+    <ul class="rules">
+      <li>The test will open in Fullscreen mode. You must stay in fullscreen for the entire duration.</li>
+      <li>If you exit fullscreen or switch tabs/windows, it will be logged as a violation and a warning will appear.</li>
+      <li>After <b>3 violations</b>, the test will be locked and submitted automatically as-is.</li>
+      <li>A calculator is available at all times from the floating button at the bottom-left — no need to leave the page to search for one.</li>
+      <li>Copy, paste, and right-click are disabled inside the test page.</li>
+      <li>The timer starts the moment you click "Start Test".</li>
+    </ul>
+
+    <input type="text" id="cand-name" placeholder="Full name (username)" autocomplete="off">
+    <input type="email" id="cand-email" placeholder="Email address" autocomplete="off">
+    <input type="tel" id="cand-phone" placeholder="Phone number" autocomplete="off">
+    <input type="text" id="cand-address" placeholder="Address" autocomplete="off">
+    <div id="login-error" style="display:none; color:var(--danger); font-family:'Segoe UI',Tahoma,Arial,sans-serif; font-size:13.5px; margin:-4px 0 12px;"></div>
+    <button class="btn brass" id="start-btn" style="width:100%;">Start Test</button>
+    <div id="hidden-note">By clicking "Start Test" you agree to the proctoring terms above. Each email address can take this test only once.</div>
+  </div>
+</div>
+
+<!-- ================= EXAM SCREEN ================= -->
+<div id="exam-screen" style="display:none;">
+  <div id="topbar">
+    <div class="brand"><span class="dot"></span> Accountant Test — <span id="topbar-name"></span></div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <div id="violations-badge">Violations: <span id="v-count">0</span>/3</div>
+      <div id="timer">30:00</div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="card">
+      <div class="eyebrow">Section 1</div>
+      <div class="section-title">Accrual Basis</div>
+      <div id="q-section-1"></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Section 2</div>
+      <div class="section-title">Inventory Systems</div>
+      <div id="q-section-2"></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Section 3</div>
+      <div class="section-title">Sales, Expenses &amp; Discounts</div>
+      <div id="q-section-3"></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Section 4</div>
+      <div class="section-title">Adjustments &amp; Closing</div>
+      <div id="q-section-4"></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Section 5 · Practical</div>
+      <div class="section-title">Purchase &amp; Sale on Credit</div>
+      <p class="q-text en">ABC Company bought goods on credit from "GoodSupplier Co." for $5,000 on March 1. Then on March 5, ABC sold the same goods on credit to "BestCustomer Co." for $7,000.<br><br>
+      Required: Record the journal entries under both systems.</p>
+
+      <div class="q">
+        <div class="q-num">16.a</div>
+        <div class="q-text en">Journal entries — Periodic Inventory System</div>
+        <textarea id="ans-periodic" placeholder="Dr. ... / Cr. ..."></textarea>
+      </div>
+      <div class="q">
+        <div class="q-num">16.b</div>
+        <div class="q-text en">Journal entries — Perpetual Inventory System</div>
+        <textarea id="ans-perpetual" placeholder="Dr. ... / Cr. ..."></textarea>
+      </div>
+
+      <div class="q">
+        <div class="q-num">16.c</div>
+        <div class="q-text en">Fill the account classification table</div>
+        <table class="acct">
+          <thead><tr><th style="text-align:left">Account</th><th style="text-align:left">Type</th></tr></thead>
+          <tbody id="acct-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <button class="btn brass" id="submit-btn" style="width:260px;">Submit Test</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= RESULT SCREEN ================= -->
+<div id="result-screen" style="display:none;">
+  <div class="wrap" style="padding-top:60px;">
+    <div class="card">
+      <div class="eyebrow" id="result-status">Submitted</div>
+      <h1 style="margin-bottom:2px;">Test Result</h1>
+      <div class="sub" id="result-sub"></div>
+
+      <div class="score-badge"><span id="score-mcq">0</span>/15 <span style="font-size:16px; color:var(--ink-soft);">(multiple choice — auto-graded)</span></div>
+
+      <div class="kv"><span>Name</span><b id="rv-name"></b></div>
+      <div class="kv"><span>Email</span><b id="rv-email"></b></div>
+      <div class="kv"><span>Phone</span><b id="rv-phone"></b></div>
+      <div class="kv"><span>Address</span><b id="rv-address"></b></div>
+      <div class="kv"><span>Time taken</span><b id="rv-time"></b></div>
+      <div class="kv"><span>Violations</span><b id="rv-viol"></b></div>
+      <div class="kv"><span>Essay question (16)</span><b>Needs manual grading — details below</b></div>
+
+      <h2 style="font-size:19px; margin:26px 0 12px; border-bottom:2px solid var(--brass); display:inline-block; padding-bottom:4px;">Question-by-question review</h2>
+      <div id="review-list"></div>
+
+      <p class="sub" style="margin-top:18px;">Full details (includes question 16 answers and violation log) — copy or download and send to the hiring team:</p>
+      <pre id="result-dump"></pre>
+
+      <div class="actions">
+        <button class="btn outline" id="copy-btn">Copy Result</button>
+        <button class="btn brass" id="download-btn">Download Result (.txt)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= FLOATING CALCULATOR ================= -->
+<button id="calc-toggle" title="Calculator">🧮</button>
+<div id="calc-panel">
+  <div id="calc-display">0</div>
+  <div class="calc-grid">
+    <button class="clear" data-k="C">C</button>
+    <button data-k="(">(</button>
+    <button data-k=")">)</button>
+    <button class="op" data-k="/">÷</button>
+
+    <button data-k="7">7</button>
+    <button data-k="8">8</button>
+    <button data-k="9">9</button>
+    <button class="op" data-k="*">×</button>
+
+    <button data-k="4">4</button>
+    <button data-k="5">5</button>
+    <button data-k="6">6</button>
+    <button class="op" data-k="-">−</button>
+
+    <button data-k="1">1</button>
+    <button data-k="2">2</button>
+    <button data-k="3">3</button>
+    <button class="op" data-k="+">+</button>
+
+    <button data-k="0">0</button>
+    <button data-k=".">.</button>
+    <button class="eq" data-k="=">=</button>
+  </div>
+</div>
+
+<!-- ================= VIOLATION WARNING MODAL ================= -->
+<div id="warn-overlay">
+  <div id="warn-box">
+    <h2>⚠ Violation Detected</h2>
+    <p id="warn-text">You left fullscreen mode or switched windows. Leaving the test page is logged automatically.</p>
+    <p><b>Violations: <span id="warn-count">1</span> / 3</b></p>
+    <button class="btn brass" id="warn-back-btn">Return to Test (Fullscreen)</button>
+  </div>
+</div>
+
+<script>
+/* ===================== DATA ===================== */
+// answer key — b/c/d indices are letters. NOTE: verify Q11 and Q15 with the exam author,
+// their listed options don't perfectly capture the textbook-complete answer.
+const QUESTIONS = [
+  {sec:1, n:1, text:"What is the main difference between cash basis and accrual basis accounting?", opts:{a:"Cash basis records when money is received or paid", b:"Accrual basis records when income is earned or expenses are incurred", c:"Both a and b", d:"None"}, correct:"c"},
+  {sec:1, n:2, text:"A company pays rent of $6,000 for three months on 1st January. How much rent expense should be recorded for January only under the accrual basis?", opts:{a:"$6,000", b:"$2,000", c:"$3,000", d:"$0"}, correct:"b"},
+  {sec:1, n:3, text:"A company earned $5,000 in December but received cash in January. Under the accrual basis, when should revenue be recorded?", opts:{a:"December", b:"January", c:"When the customer pays", d:"Never"}, correct:"a"},
+
+  {sec:2, n:4, text:"The periodic inventory system updates inventory:", opts:{a:"After every sale", b:"Only at the end of the period", c:"Daily", d:"Automatically"}, correct:"b"},
+  {sec:2, n:5, text:"Under the perpetual system, when goods are sold, which two accounts are affected?", opts:{a:"Cash and Sales only", b:"Sales and Cost of Goods Sold", c:"Purchases and Inventory", d:"Inventory and Expenses"}, correct:"b"},
+  {sec:2, n:6, text:"If beginning inventory = $10,000, purchases = $25,000, ending inventory = $5,000, what is the cost of goods sold (COGS) in periodic system?", opts:{a:"$25,000", b:"$30,000", c:"$15,000", d:"$35,000"}, correct:"b"},
+
+  {sec:3, n:7, text:"A company sells goods for $1,000 on credit. What is the journal entry?", opts:{a:"Dr. Cash $1,000; Cr. Sales $1,000", b:"Dr. Accounts Receivable $1,000; Cr. Sales $1,000", c:"Dr. Sales $1,000; Cr. Accounts Receivable $1,000", d:"None"}, correct:"b"},
+  {sec:3, n:8, text:"A company pays electricity bill $200 by cash. Entry is:", opts:{a:"Dr. Expense $200; Cr. Cash $200", b:"Dr. Cash $200; Cr. Expense $200", c:"Dr. Electricity Payable $200; Cr. Expense $200", d:"None"}, correct:"a"},
+  {sec:3, n:9, text:"A customer returns goods worth $100. Which account should be debited?", opts:{a:"Sales Returns", b:"Sales Revenue", c:"Accounts Receivable", d:"Purchases"}, correct:"a"},
+  {sec:3, n:10, text:"If a supplier gives 2% discount for early payment of $1,000, how much cash is paid?", opts:{a:"$1,000", b:"$980", c:"$1,020", d:"$900"}, correct:"b"},
+  {sec:3, n:11, text:"A company sells goods for $5,000 plus 10% sales tax on credit. What is the correct part of journal entry?", opts:{a:"Dr. Accounts Receivable $5,000; Cr. Sales $5,000", b:"Dr. Accounts Receivable $5,500; Cr. Sales $5,000", c:"Dr. Sales $5,000, Dr. Sales Tax Payable $500; Cr. Accounts Receivable $5,500", d:"Dr. Accounts Receivable $5,000; Cr. Sales Tax Payable $5,000"}, correct:"b"},
+
+  {sec:4, n:12, text:"Salaries of $2,000 are unpaid at year-end. Adjustment entry:", opts:{a:"Dr. Salaries Expense $2,000; Cr. Salaries Payable $2,000", b:"Dr. Salaries Payable $2,000; Cr. Salaries Expense $2,000", c:"Dr. Cash $2,000; Cr. Salaries Expense $2,000", d:"None"}, correct:"a"},
+  {sec:4, n:13, text:"Unearned revenue becomes earned when:", opts:{a:"Cash is received", b:"Service is provided", c:"Invoice is created", d:"Customer confirms order"}, correct:"b"},
+  {sec:4, n:14, text:"Depreciation is:", opts:{a:"Cash expense", b:"Allocation of cost of fixed asset", c:"Payment to supplier", d:"None"}, correct:"b"},
+  {sec:4, n:15, text:"The purpose of closing entries is to:", opts:{a:"Start new accounts each year", b:"Adjust asset values", c:"Close the bank account", d:"Increase equity"}, correct:"a"},
+];
+
+const ACCOUNTS = [
+  "Petty Cash","Accrued Utilities Expenses","Devices","Sales Account","Social Security Expense",
+  "Taxes Withholding","INVENTORY","Accumulated Depreciation of Office Furniture","Social Security Payable",
+  "Prepaid Rent","Accounts Receivable","Accounts Payables","Shipping Expense","Capital"
+];
+
+const EXAM_SECONDS = 30*60;
+const MAX_VIOLATIONS = 3;
+
+let violations = 0;
+let submitted = false;
+let startTime = null;
+let remaining = EXAM_SECONDS;
+let timerInterval = null;
+/* ===================== ONE-EMAIL-PER-CANDIDATE CONFIG =====================
+   To enforce "one attempt per email" ACROSS different devices/browsers, this
+   page needs a shared backend to remember which emails already took the test.
+   A static HTML file alone cannot do this reliably (localStorage is
+   per-browser only — someone could just use another browser/device/incognito
+   window to bypass a client-only check).
+
+   Paste the URL of a small Google Apps Script "Web App" below to enable a
+   real, shared, cross-device check. Setup instructions are provided
+   separately. Leave it empty ('') to fall back to a same-browser-only guard.
+*/
+const CONFIG = {
+  EMAIL_CHECK_URL: '' // e.g. 'https://script.google.com/macros/s/XXXXXXX/exec'
+};
+
+const LOCAL_GUARD_PREFIX = 'examTaken_';
+
+async function checkAndRegisterEmail(email){
+  const key = LOCAL_GUARD_PREFIX + email.toLowerCase();
+
+  // Same-browser guard (always active, works even without a backend)
+  if(localStorage.getItem(key)){
+    return {allowed:false, reason:'This email has already been used to take the test on this device/browser.'};
+  }
+
+  // Cross-device guard (only if a backend URL is configured)
+  if(CONFIG.EMAIL_CHECK_URL){
+    try{
+      const res = await fetch(CONFIG.EMAIL_CHECK_URL, {
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'}, // avoids CORS preflight on Apps Script
+        body: JSON.stringify({email, name: candName})
+      });
+      const data = await res.json();
+      if(!data.allowed){
+        return {allowed:false, reason:'This email has already taken the test.'};
+      }
+    }catch(e){
+      return {allowed:false, reason:'Could not verify eligibility right now (network error). Please try again.'};
+    }
+  }
+
+  localStorage.setItem(key, new Date().toISOString());
+  return {allowed:true};
+}
+
+let candName = "";
+let candEmail = "";
+let candPhone = "";
+let candAddress = "";
+let violationLog = [];
+
+/* ===================== RENDER QUESTIONS ===================== */
+function renderQuestions(){
+  const bySec = {1:[],2:[],3:[],4:[]};
+  QUESTIONS.forEach(q=>bySec[q.sec].push(q));
+  Object.keys(bySec).forEach(sec=>{
+    const container = document.getElementById('q-section-'+sec);
+    bySec[sec].forEach(q=>{
+      const div = document.createElement('div');
+      div.className='q';
+      let optsHtml='';
+      Object.entries(q.opts).forEach(([k,v])=>{
+        optsHtml += `<label class="opt" data-q="${q.n}">
+          <input type="radio" name="q${q.n}" value="${k}">
+          <span>${k}) ${v}</span>
+        </label>`;
+      });
+      div.innerHTML = `<div class="q-num">${q.n}.</div><div class="q-text en">${q.text}</div><div class="opts">${optsHtml}</div>`;
+      container.appendChild(div);
+    });
+  });
+
+  // highlight selected option
+  document.querySelectorAll('.opt input').forEach(inp=>{
+    inp.addEventListener('change', ()=>{
+      const name = inp.name;
+      document.querySelectorAll(`input[name="${name}"]`).forEach(i=>{
+        i.closest('.opt').classList.toggle('selected', i.checked);
+      });
+    });
+  });
+
+  const tbody = document.getElementById('acct-table-body');
+  ACCOUNTS.forEach((acc,i)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="acct-name">${acc}</td>
+      <td><input type="text" id="acct-type-${i}" placeholder="e.g. Asset / Liability / Expense"></td>`;
+    tbody.appendChild(tr);
+  });
+}
+renderQuestions();
+
+/* ===================== START ===================== */
+document.getElementById('start-btn').addEventListener('click', async ()=>{
+  const nameInput = document.getElementById('cand-name');
+  const emailInput = document.getElementById('cand-email');
+  const phoneInput = document.getElementById('cand-phone');
+  const addressInput = document.getElementById('cand-address');
+  const errorBox = document.getElementById('login-error');
+  errorBox.style.display = 'none';
+
+  let missing = false;
+  [nameInput, emailInput, phoneInput, addressInput].forEach(inp=>{
+    if(!inp.value.trim()){ inp.style.borderColor='var(--danger)'; missing = true; }
+    else{ inp.style.borderColor='var(--line)'; }
+  });
+  if(missing){ nameInput.focus(); return; }
+
+  const emailVal = emailInput.value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)){
+    emailInput.style.borderColor='var(--danger)';
+    errorBox.textContent = 'Please enter a valid email address.';
+    errorBox.style.display = 'block';
+    emailInput.focus();
+    return;
+  }
+
+  candName = nameInput.value.trim();
+  candEmail = emailVal;
+  candPhone = phoneInput.value.trim();
+  candAddress = addressInput.value.trim();
+
+  const startBtn = document.getElementById('start-btn');
+  startBtn.disabled = true;
+  startBtn.textContent = 'Checking eligibility…';
+
+  const eligibility = await checkAndRegisterEmail(candEmail);
+  if(!eligibility.allowed){
+    startBtn.disabled = false;
+    startBtn.textContent = 'Start Test';
+    emailInput.style.borderColor='var(--danger)';
+    errorBox.textContent = eligibility.reason;
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  document.getElementById('topbar-name').textContent = candName;
+
+  try{
+    await document.documentElement.requestFullscreen();
+  }catch(e){ /* fullscreen may be blocked — exam still proceeds, but we note it */
+    violationLog.push({t:0, type:'fullscreen_denied', note:'Browser denied fullscreen request'});
+  }
+
+  document.getElementById('start-screen').style.display='none';
+  document.getElementById('exam-screen').style.display='block';
+  startTime = Date.now();
+  startTimer();
+  attachMonitors();
+});
+
+/* ===================== TIMER ===================== */
+function startTimer(){
+  timerInterval = setInterval(()=>{
+    remaining--;
+    const m = Math.floor(remaining/60).toString().padStart(2,'0');
+    const s = (remaining%60).toString().padStart(2,'0');
+    const el = document.getElementById('timer');
+    el.textContent = `${m}:${s}`;
+    if(remaining<=60) el.classList.add('low');
+    if(remaining<=0){
+      clearInterval(timerInterval);
+      finishExam('time_up');
+    }
+  },1000);
+}
+
+/* ===================== MONITORING ===================== */
+let lastViolationTime = 0;
+function logViolation(type, note){
+  if(submitted) return;
+  const now = Date.now();
+  const elapsed = Math.round((now-startTime)/1000);
+  // coalesce: a single Alt+Tab can fire blur + visibilitychange + fullscreenchange
+  // almost simultaneously — treat anything within 900ms as ONE violation, not three.
+  if(now - lastViolationTime < 900){
+    violationLog.push({t: elapsed, type, note: note+' (same episode)'});
+    return;
+  }
+  lastViolationTime = now;
+  violations++;
+  violationLog.push({t:elapsed, type, note});
+  document.getElementById('v-count').textContent = violations;
+  document.getElementById('warn-count').textContent = violations;
+  document.getElementById('warn-text').textContent = note;
+  document.getElementById('warn-overlay').classList.add('show');
+  if(violations>=MAX_VIOLATIONS){
+    setTimeout(()=>finishExam('violations'), 400);
+  }
+}
+
+function attachMonitors(){
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.hidden && !submitted){
+      logViolation('tab_switch', 'You left the test page (switched tab or app).');
+    }
+  });
+  document.addEventListener('fullscreenchange', ()=>{
+    if(!document.fullscreenElement && !submitted){
+      logViolation('fullscreen_exit', 'You exited fullscreen mode.');
+    }
+  });
+  window.addEventListener('blur', ()=>{
+    if(!submitted){
+      logViolation('window_blur', 'You switched away from the test window (Alt+Tab or another app).');
+    }
+  });
+  document.addEventListener('contextmenu', e=>e.preventDefault());
+  document.addEventListener('copy', e=>e.preventDefault());
+  document.addEventListener('cut', e=>e.preventDefault());
+  document.addEventListener('keydown', e=>{
+    const blocked = (e.key==='F12') || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) || (e.ctrlKey && e.key==='u');
+    if(blocked){
+      e.preventDefault();
+      logViolation('devtools_attempt', 'Attempted to open Developer Tools (DevTools).');
+    }
+  });
+}
+
+document.getElementById('warn-back-btn').addEventListener('click', async ()=>{
+  document.getElementById('warn-overlay').classList.remove('show');
+  if(!document.fullscreenElement){
+    try{ await document.documentElement.requestFullscreen(); }catch(e){}
+  }
+});
+
+/* ===================== CALCULATOR ===================== */
+const calcToggle = document.getElementById('calc-toggle');
+const calcPanel = document.getElementById('calc-panel');
+const calcDisplay = document.getElementById('calc-display');
+let calcExpr = '';
+calcToggle.addEventListener('click', ()=> calcPanel.classList.toggle('open'));
+document.querySelectorAll('.calc-grid button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const k = btn.dataset.k;
+    if(k==='C'){ calcExpr=''; }
+    else if(k==='='){
+      try{
+        // basic safe evaluation: only digits, operators, parentheses, dot allowed (enforced by button set)
+        const result = Function('"use strict";return ('+calcExpr+')')();
+        calcExpr = String(result);
+      }catch(e){ calcExpr='Error'; }
+    } else {
+      calcExpr += k;
+    }
+    calcDisplay.textContent = calcExpr || '0';
+  });
+});
+
+/* ===================== SUBMIT / FINISH ===================== */
+document.getElementById('submit-btn').addEventListener('click', ()=>{
+  if(confirm('Are you sure you want to submit the test? You will not be able to edit it afterwards.')){
+    finishExam('manual');
+  }
+});
+
+function finishExam(reason){
+  if(submitted) return;
+  submitted = true;
+  clearInterval(timerInterval);
+  if(document.fullscreenElement){ document.exitFullscreen().catch(()=>{}); }
+  document.getElementById('warn-overlay').classList.remove('show');
+
+  // grade MCQ + build per-question review
+  let score = 0;
+  const mcqAnswers = {};
+  const review = [];
+  QUESTIONS.forEach(q=>{
+    const sel = document.querySelector(`input[name="q${q.n}"]:checked`);
+    const val = sel ? sel.value : null;
+    mcqAnswers[q.n] = val;
+    const isCorrect = val === q.correct;
+    if(isCorrect) score++;
+    review.push({
+      n: q.n,
+      text: q.text,
+      your_answer: val ? `${val}) ${q.opts[val]}` : '(no answer)',
+      correct_answer: `${q.correct}) ${q.opts[q.correct]}`,
+      result: isCorrect ? 'Correct' : 'Incorrect'
+    });
+  });
+
+  const periodic = document.getElementById('ans-periodic').value.trim();
+  const perpetual = document.getElementById('ans-perpetual').value.trim();
+  const acctTable = ACCOUNTS.map((acc,i)=>({
+    account: acc,
+    type: document.getElementById('acct-type-'+i).value.trim()
+  }));
+
+  const elapsedSec = Math.round((Date.now()-startTime)/1000);
+  const mm = Math.floor(elapsedSec/60), ss = elapsedSec%60;
+
+  const reasonLabel = {
+    manual: 'Submitted manually',
+    time_up: 'Time is up — submitted automatically',
+    violations: 'Test locked automatically due to repeated violations'
+  }[reason];
+
+  document.getElementById('exam-screen').style.display='none';
+  document.getElementById('result-screen').style.display='block';
+  document.getElementById('result-status').textContent = reasonLabel;
+  document.getElementById('result-sub').textContent = `Position: Senior Accountant Test`;
+  document.getElementById('score-mcq').textContent = score;
+  document.getElementById('rv-name').textContent = candName;
+  document.getElementById('rv-email').textContent = candEmail;
+  document.getElementById('rv-phone').textContent = candPhone;
+  document.getElementById('rv-address').textContent = candAddress;
+  document.getElementById('rv-time').textContent = `${mm}:${ss.toString().padStart(2,'0')}`;
+  document.getElementById('rv-viol').textContent = violations;
+
+  const reviewList = document.getElementById('review-list');
+  reviewList.innerHTML = '';
+  review.forEach(r=>{
+    const div = document.createElement('div');
+    div.className = 'rv-item' + (r.result==='Incorrect' ? ' wrong' : '');
+    div.innerHTML = `
+      <div class="rv-head"><span>Question ${r.n}</span><span class="tag">${r.result==='Incorrect' ? '✕ Incorrect' : '✓ Correct'}</span></div>
+      <div class="rv-q">${r.text}</div>
+      <div class="rv-ans">Your answer: <b>${r.your_answer}</b>${r.result==='Incorrect' ? `<br>Correct answer: <b>${r.correct_answer}</b>` : ''}</div>
+    `;
+    reviewList.appendChild(div);
+  });
+
+  const dump = {
+    candidate: candName,
+    email: candEmail,
+    phone: candPhone,
+    address: candAddress,
+    submitted_reason: reasonLabel,
+    submitted_at: new Date().toISOString(),
+    time_taken_seconds: elapsedSec,
+    mcq_score: `${score}/15`,
+    mcq_review: review,
+    violations_count: violations,
+    violations_log: violationLog,
+    practical_periodic: periodic,
+    practical_perpetual: perpetual,
+    account_table: acctTable
+  };
+  const dumpText = JSON.stringify(dump, null, 2);
+  document.getElementById('result-dump').textContent = dumpText;
+
+  document.getElementById('copy-btn').onclick = ()=>{
+    navigator.clipboard.writeText(dumpText).then(()=>{
+      document.getElementById('copy-btn').textContent = 'Copied ✓';
+      setTimeout(()=>document.getElementById('copy-btn').textContent='Copy Result', 1500);
+    });
+  };
+  document.getElementById('download-btn').onclick = ()=>{
+    const blob = new Blob([dumpText], {type:'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `exam_result_${candName.replace(/\s+/g,'_')}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+}
+</script>
+</body>
+</html>
