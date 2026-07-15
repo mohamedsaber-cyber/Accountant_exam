@@ -412,19 +412,18 @@ let submitted = false;
 let startTime = null;
 let remaining = EXAM_SECONDS;
 let timerInterval = null;
-/* ===================== ONE-EMAIL-PER-CANDIDATE CONFIG =====================
-   To enforce "one attempt per email" ACROSS different devices/browsers, this
-   page needs a shared backend to remember which emails already took the test.
-   A static HTML file alone cannot do this reliably (localStorage is
-   per-browser only — someone could just use another browser/device/incognito
-   window to bypass a client-only check).
+/* ===================== SHARED BACKEND CONFIG =====================
+   This same backend does two jobs via one Google Apps Script Web App:
+     1) Enforces one attempt per email, across devices/browsers.
+     2) Logs every submitted result to a "results" tab so you have a
+        full history of every candidate in one Google Sheet.
 
-   Paste the URL of a small Google Apps Script "Web App" below to enable a
-   real, shared, cross-device check. Setup instructions are provided
-   separately. Leave it empty ('') to fall back to a same-browser-only guard.
+   Paste your Apps Script Web App URL below. Leave it empty ('') to
+   disable both features (falls back to same-browser-only email guard,
+   and results will only be visible to the candidate themselves).
 */
 const CONFIG = {
-  EMAIL_CHECK_URL: '' // e.g. 'https://script.google.com/macros/s/XXXXXXX/exec'
+  BACKEND_URL: 'https://script.google.com/macros/s/AKfycbxYSfcoi10pp5vxslnbJl1nd-MBqTkWNswoo_JN_tOzZaWZXGLT7zMEBE94BZ7aBbdK/exec'
 };
 
 const LOCAL_GUARD_PREFIX = 'examTaken_';
@@ -438,12 +437,12 @@ async function checkAndRegisterEmail(email){
   }
 
   // Cross-device guard (only if a backend URL is configured)
-  if(CONFIG.EMAIL_CHECK_URL){
+  if(CONFIG.BACKEND_URL){
     try{
-      const res = await fetch(CONFIG.EMAIL_CHECK_URL, {
+      const res = await fetch(CONFIG.BACKEND_URL, {
         method:'POST',
         headers:{'Content-Type':'text/plain;charset=utf-8'}, // avoids CORS preflight on Apps Script
-        body: JSON.stringify({email, name: candName})
+        body: JSON.stringify({type:'check_email', email, name: candName})
       });
       const data = await res.json();
       if(!data.allowed){
@@ -754,6 +753,17 @@ function finishExam(reason){
   };
   const dumpText = JSON.stringify(dump, null, 2);
   document.getElementById('result-dump').textContent = dumpText;
+
+  // Best-effort: send result to the shared backend for the results history.
+  // Doesn't block the UI — the candidate still sees/downloads their result
+  // even if this fails (e.g. no internet, backend not configured).
+  if(CONFIG.BACKEND_URL){
+    fetch(CONFIG.BACKEND_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(Object.assign({type:'submit_result'}, dump))
+    }).catch(()=>{ /* silently ignore — candidate's own copy/download still works */ });
+  }
 
   document.getElementById('copy-btn').onclick = ()=>{
     navigator.clipboard.writeText(dumpText).then(()=>{
