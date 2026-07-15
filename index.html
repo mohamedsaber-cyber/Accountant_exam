@@ -102,6 +102,12 @@
   table.acct td.acct-name{ padding:8px 10px; background:#fbf9f4; white-space:nowrap; direction:ltr; text-align:left; }
   table.acct input{ width:100%; border:none; padding:8px 10px; font-family:inherit; font-size:14px; background:transparent; }
   table.acct input:focus{ outline:2px solid var(--brass); outline-offset:-2px; background:#fffdf5;}
+  table.acct.coa{ margin-bottom:8px; }
+  table.acct.coa td{ padding:7px 10px; direction:ltr; text-align:left; font-family:var(--mono); font-size:13px; }
+  table.acct.je td{ padding:0; }
+  table.acct.je input{ text-align:center; direction:ltr; }
+  table.acct.je th{ text-align:center; }
+  table.acct.je th:first-child{ text-align:left; }
 
   .btn{
     font-family:'Segoe UI',Tahel,Arial,sans-serif; font-weight:700; font-size:15px;
@@ -211,7 +217,7 @@
   <div class="card">
     <div class="eyebrow">Accountant Recruitment · Timed Assessment</div>
     <h1>Senior Accountant Test</h1>
-    <div class="sub">Duration: 30 minutes &nbsp;|&nbsp; Questions: 16 &nbsp;|&nbsp; Language: Simple English</div>
+    <div class="sub">Duration: 35 minutes &nbsp;|&nbsp; Questions: 21 &nbsp;|&nbsp; Language: Simple English</div>
 
     <ul class="rules">
       <li>The test will open in Fullscreen mode. You must stay in fullscreen for the entire duration.</li>
@@ -257,7 +263,7 @@
 
     <div class="card">
       <div class="eyebrow">Section 3</div>
-      <div class="section-title">Sales, Expenses &amp; Discounts</div>
+      <div class="section-title">Sales, Discounts &amp; Shipping Terms</div>
       <div id="q-section-3"></div>
     </div>
 
@@ -268,27 +274,53 @@
     </div>
 
     <div class="card">
-      <div class="eyebrow">Section 5 · Practical</div>
+      <div class="eyebrow">Section 5</div>
+      <div class="section-title">Financial Statements &amp; Trial Balance</div>
+      <div id="q-section-5"></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Section 6</div>
+      <div class="section-title">IFRS / International Standards</div>
+      <div id="q-section-6"></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Section 7 · Practical</div>
       <div class="section-title">Purchase &amp; Sale on Credit</div>
       <p class="q-text en">ABC Company bought goods on credit from "GoodSupplier Co." for $5,000 on March 1. Then on March 5, ABC sold the same goods on credit to "BestCustomer Co." for $7,000.<br><br>
       Required: Record the journal entries under both systems.</p>
 
       <div class="q">
-        <div class="q-num">16.a</div>
-        <div class="q-text en">Journal entries — Periodic Inventory System</div>
-        <textarea id="ans-periodic" placeholder="Dr. ... / Cr. ..."></textarea>
-      </div>
-      <div class="q">
-        <div class="q-num">16.b</div>
-        <div class="q-text en">Journal entries — Perpetual Inventory System</div>
-        <textarea id="ans-perpetual" placeholder="Dr. ... / Cr. ..."></textarea>
+        <div class="q-text en" style="margin-bottom:8px;">Chart of accounts — use the <b>account number</b> in your journal entries below.</div>
+        <table class="acct coa">
+          <thead><tr><th style="text-align:left">No.</th><th style="text-align:left">Account</th></tr></thead>
+          <tbody id="coa-table-body"></tbody>
+        </table>
       </div>
 
       <div class="q">
-        <div class="q-num">16.c</div>
+        <div class="q-num">21.a</div>
+        <div class="q-text en">Journal entries — Periodic Inventory System</div>
+        <table class="acct je">
+          <thead><tr><th>Account No.</th><th>Debit ($)</th><th>Credit ($)</th></tr></thead>
+          <tbody id="je-periodic-body"></tbody>
+        </table>
+      </div>
+      <div class="q">
+        <div class="q-num">21.b</div>
+        <div class="q-text en">Journal entries — Perpetual Inventory System</div>
+        <table class="acct je">
+          <thead><tr><th>Account No.</th><th>Debit ($)</th><th>Credit ($)</th></tr></thead>
+          <tbody id="je-perpetual-body"></tbody>
+        </table>
+      </div>
+
+      <div class="q">
+        <div class="q-num">21.c</div>
         <div class="q-text en">Fill the account classification table</div>
         <table class="acct">
-          <thead><tr><th style="text-align:left">Account</th><th style="text-align:left">Type</th></tr></thead>
+          <thead><tr><th style="text-align:left">Account</th><th style="text-align:left">الاسم بالعربي</th><th style="text-align:left">Type</th></tr></thead>
           <tbody id="acct-table-body"></tbody>
         </table>
       </div>
@@ -308,7 +340,7 @@
       <h1 style="margin-bottom:2px;">Test Result</h1>
       <div class="sub" id="result-sub"></div>
 
-      <div class="score-badge"><span id="score-mcq">0</span>/15 <span style="font-size:16px; color:var(--ink-soft);">(multiple choice — auto-graded)</span></div>
+      <div class="score-badge"><span id="score-mcq">0</span>/20 <span style="font-size:16px; color:var(--ink-soft);">(multiple choice — auto-graded)</span></div>
 
       <div class="kv"><span>Name</span><b id="rv-name"></b></div>
       <div class="kv"><span>Email</span><b id="rv-email"></b></div>
@@ -316,7 +348,7 @@
       <div class="kv"><span>Address</span><b id="rv-address"></b></div>
       <div class="kv"><span>Time taken</span><b id="rv-time"></b></div>
       <div class="kv"><span>Violations</span><b id="rv-viol"></b></div>
-      <div class="kv"><span>Essay question (16)</span><b>Needs manual grading — details below</b></div>
+      <div class="kv"><span>Essay question (21)</span><b>Needs manual grading — details below</b></div>
 
       <h2 style="font-size:19px; margin:26px 0 12px; border-bottom:2px solid var(--brass); display:inline-block; padding-bottom:4px;">Question-by-question review</h2>
       <div id="review-list"></div>
@@ -375,27 +407,39 @@
 
 <script>
 /* ===================== DATA ===================== */
-// answer key — b/c/d indices are letters. NOTE: verify Q11 and Q15 with the exam author,
-// their listed options don't perfectly capture the textbook-complete answer.
+// answer key — b/c/d indices are letters.
 const QUESTIONS = [
+  // Section 1 — Accrual Basis
   {sec:1, n:1, text:"What is the main difference between cash basis and accrual basis accounting?", opts:{a:"Cash basis records when money is received or paid", b:"Accrual basis records when income is earned or expenses are incurred", c:"Both a and b", d:"None"}, correct:"c"},
   {sec:1, n:2, text:"A company pays rent of $6,000 for three months on 1st January. How much rent expense should be recorded for January only under the accrual basis?", opts:{a:"$6,000", b:"$2,000", c:"$3,000", d:"$0"}, correct:"b"},
   {sec:1, n:3, text:"A company earned $5,000 in December but received cash in January. Under the accrual basis, when should revenue be recorded?", opts:{a:"December", b:"January", c:"When the customer pays", d:"Never"}, correct:"a"},
 
-  {sec:2, n:4, text:"The periodic inventory system updates inventory:", opts:{a:"After every sale", b:"Only at the end of the period", c:"Daily", d:"Automatically"}, correct:"b"},
-  {sec:2, n:5, text:"Under the perpetual system, when goods are sold, which two accounts are affected?", opts:{a:"Cash and Sales only", b:"Sales and Cost of Goods Sold", c:"Purchases and Inventory", d:"Inventory and Expenses"}, correct:"b"},
-  {sec:2, n:6, text:"If beginning inventory = $10,000, purchases = $25,000, ending inventory = $5,000, what is the cost of goods sold (COGS) in periodic system?", opts:{a:"$25,000", b:"$30,000", c:"$15,000", d:"$35,000"}, correct:"b"},
+  // Section 2 — Inventory Systems
+  {sec:2, n:4, text:"Under the perpetual system, when goods are sold, which two accounts are affected?", opts:{a:"Cash and Sales only", b:"Sales and Cost of Goods Sold", c:"Purchases and Inventory", d:"Inventory and Expenses"}, correct:"b"},
+  {sec:2, n:5, text:"If beginning inventory = $10,000, purchases = $25,000, ending inventory = $5,000, what is the cost of goods sold (COGS) in periodic system?", opts:{a:"$25,000", b:"$30,000", c:"$15,000", d:"$35,000"}, correct:"b"},
+  {sec:2, n:6, text:"Under the perpetual system, if a company returns $500 of goods it had purchased on credit, what's the correct entry?", opts:{a:"Dr. Accounts Payable $500; Cr. Inventory $500", b:"Dr. Inventory $500; Cr. Accounts Payable $500", c:"Dr. Accounts Payable $500; Cr. Purchases $500", d:"Dr. Purchase Returns $500; Cr. Accounts Payable $500"}, correct:"a"},
 
-  {sec:3, n:7, text:"A company sells goods for $1,000 on credit. What is the journal entry?", opts:{a:"Dr. Cash $1,000; Cr. Sales $1,000", b:"Dr. Accounts Receivable $1,000; Cr. Sales $1,000", c:"Dr. Sales $1,000; Cr. Accounts Receivable $1,000", d:"None"}, correct:"b"},
-  {sec:3, n:8, text:"A company pays electricity bill $200 by cash. Entry is:", opts:{a:"Dr. Expense $200; Cr. Cash $200", b:"Dr. Cash $200; Cr. Expense $200", c:"Dr. Electricity Payable $200; Cr. Expense $200", d:"None"}, correct:"a"},
-  {sec:3, n:9, text:"A customer returns goods worth $100. Which account should be debited?", opts:{a:"Sales Returns", b:"Sales Revenue", c:"Accounts Receivable", d:"Purchases"}, correct:"a"},
-  {sec:3, n:10, text:"If a supplier gives 2% discount for early payment of $1,000, how much cash is paid?", opts:{a:"$1,000", b:"$980", c:"$1,020", d:"$900"}, correct:"b"},
-  {sec:3, n:11, text:"A company sells goods for $5,000 plus 10% sales tax on credit. What is the correct part of journal entry?", opts:{a:"Dr. Accounts Receivable $5,000; Cr. Sales $5,000", b:"Dr. Accounts Receivable $5,500; Cr. Sales $5,000", c:"Dr. Sales $5,000, Dr. Sales Tax Payable $500; Cr. Accounts Receivable $5,500", d:"Dr. Accounts Receivable $5,000; Cr. Sales Tax Payable $5,000"}, correct:"b"},
+  // Section 3 — Sales, Discounts & Shipping Terms
+  {sec:3, n:7, text:"If a supplier gives 2% discount for early payment of $1,000, how much cash is paid?", opts:{a:"$1,000", b:"$980", c:"$1,020", d:"$900"}, correct:"b"},
+  {sec:3, n:8, text:"Under \"Free on Board Shipping Point\" terms, ownership of the goods transfers to the buyer:", opts:{a:"When the goods arrive at the buyer's location", b:"When the goods leave the seller's warehouse", c:"When the invoice is issued", d:"When payment is received by the seller"}, correct:"b"},
 
-  {sec:4, n:12, text:"Salaries of $2,000 are unpaid at year-end. Adjustment entry:", opts:{a:"Dr. Salaries Expense $2,000; Cr. Salaries Payable $2,000", b:"Dr. Salaries Payable $2,000; Cr. Salaries Expense $2,000", c:"Dr. Cash $2,000; Cr. Salaries Expense $2,000", d:"None"}, correct:"a"},
-  {sec:4, n:13, text:"Unearned revenue becomes earned when:", opts:{a:"Cash is received", b:"Service is provided", c:"Invoice is created", d:"Customer confirms order"}, correct:"b"},
-  {sec:4, n:14, text:"Depreciation is:", opts:{a:"Cash expense", b:"Allocation of cost of fixed asset", c:"Payment to supplier", d:"None"}, correct:"b"},
-  {sec:4, n:15, text:"The purpose of closing entries is to:", opts:{a:"Start new accounts each year", b:"Adjust asset values", c:"Close the bank account", d:"Increase equity"}, correct:"a"},
+  // Section 4 — Adjustments, Depreciation & Closing
+  {sec:4, n:9, text:"Salaries of $2,000 are unpaid at year-end. Adjustment entry:", opts:{a:"Dr. Salaries Expense $2,000; Cr. Salaries Payable $2,000", b:"Dr. Salaries Payable $2,000; Cr. Salaries Expense $2,000", c:"Dr. Cash $2,000; Cr. Salaries Expense $2,000", d:"None"}, correct:"a"},
+  {sec:4, n:10, text:"A machine costing $20,000 with a 5-year useful life and no salvage value is depreciated using the straight-line method. What is the annual depreciation expense?", opts:{a:"$5,000", b:"$4,000", c:"$20,000", d:"$2,500"}, correct:"b"},
+  {sec:4, n:11, text:"A company received $3,000 cash in advance for services to be performed next month. What is the correct entry today?", opts:{a:"Dr. Cash $3,000; Cr. Service Revenue $3,000", b:"Dr. Cash $3,000; Cr. Unearned Revenue $3,000", c:"Dr. Unearned Revenue $3,000; Cr. Cash $3,000", d:"Dr. Accounts Receivable $3,000; Cr. Unearned Revenue $3,000"}, correct:"b"},
+  {sec:4, n:12, text:"The purpose of closing entries is to:", opts:{a:"Transfer temporary account balances to retained earnings and reset them to zero for the new period", b:"Adjust the recorded value of fixed assets", c:"Close the company's bank account", d:"Permanently increase total equity"}, correct:"a"},
+
+  // Section 5 — Financial Statements & Trial Balance
+  {sec:5, n:13, text:"A company has Net Sales of $50,000, COGS of $32,000, and Operating Expenses of $10,000. What is the Gross Profit?", opts:{a:"$8,000", b:"$18,000", c:"$28,000", d:"$50,000"}, correct:"b"},
+  {sec:5, n:14, text:"Which financial statement shows a company's financial position at a specific point in time?", opts:{a:"Income Statement", b:"Statement of Cash Flows", c:"Balance Sheet", d:"Statement of Retained Earnings"}, correct:"c"},
+  {sec:5, n:15, text:"A trial balance shows total debits of $45,000 and total credits of $43,500. What does this most likely indicate?", opts:{a:"The company had a net loss for the period", b:"A posting or recording error exists", c:"Total assets exceed total liabilities", d:"The accounts are ready for the financial statements to be prepared"}, correct:"b"},
+
+  // Section 6 — IFRS / International Standards
+  {sec:6, n:16, text:"Under IFRS, inventory must be measured at the lower of cost and:", opts:{a:"Fair value", b:"Net Realizable Value", c:"Replacement cost", d:"Historical cost"}, correct:"b"},
+  {sec:6, n:17, text:"Which inventory costing method is NOT permitted under IFRS?", opts:{a:"FIFO", b:"Weighted Average", c:"LIFO (Last-In, First-Out)", d:"Specific Identification"}, correct:"c"},
+  {sec:6, n:18, text:"Under IFRS, revenue from a contract with a customer is recognized when:", opts:{a:"Cash is collected from the customer", b:"The contract is signed", c:"Control of the goods or services transfers to the customer", d:"The invoice is issued"}, correct:"c"},
+  {sec:6, n:19, text:"According to the IFRS Conceptual Framework, the two fundamental qualitative characteristics of useful financial information are relevance and:", opts:{a:"Comparability", b:"Faithful representation", c:"Timeliness", d:"Verifiability"}, correct:"b"},
+  {sec:6, n:20, text:"Under IAS 2 (Inventories), which of the following costs should be excluded from the cost of inventory?", opts:{a:"Purchase price", b:"Import duties", c:"Selling costs", d:"Conversion costs"}, correct:"c"},
 ];
 
 const ACCOUNTS = [
@@ -404,7 +448,31 @@ const ACCOUNTS = [
   "Prepaid Rent","Accounts Receivable","Accounts Payables","Shipping Expense","Capital"
 ];
 
-const EXAM_SECONDS = 30*60;
+// Chart of accounts for the Section 5 practical journal-entry exercise.
+// Numbers are arbitrary but consistent (100s=assets, 200s=liabilities,
+// 300s=equity, 400s=revenue, 500s=expenses) so candidates can reference
+// them by number in the debit/credit grid.
+const CHART_OF_ACCOUNTS = [
+  {no:101, name:"Petty Cash"},
+  {no:102, name:"Devices"},
+  {no:103, name:"Prepaid Rent"},
+  {no:104, name:"Inventory"},
+  {no:105, name:"Accounts Receivable"},
+  {no:106, name:"Accumulated Depreciation — Office Furniture"},
+  {no:201, name:"Accounts Payable"},
+  {no:202, name:"Social Security Payable"},
+  {no:203, name:"Taxes Withholding"},
+  {no:204, name:"Accrued Utilities Expenses"},
+  {no:301, name:"Capital"},
+  {no:401, name:"Sales Revenue"},
+  {no:501, name:"Purchases"},
+  {no:502, name:"Cost of Goods Sold (COGS)"},
+  {no:503, name:"Social Security Expense"},
+  {no:504, name:"Shipping Expense"}
+];
+const JE_ROWS = 6; // blank rows offered per journal-entry table (unused ones stay empty)
+
+const EXAM_SECONDS = 35*60;
 const MAX_VIOLATIONS = 3;
 
 let violations = 0;
@@ -465,7 +533,7 @@ let violationLog = [];
 
 /* ===================== RENDER QUESTIONS ===================== */
 function renderQuestions(){
-  const bySec = {1:[],2:[],3:[],4:[]};
+  const bySec = {1:[],2:[],3:[],4:[],5:[],6:[]};
   QUESTIONS.forEach(q=>bySec[q.sec].push(q));
   Object.keys(bySec).forEach(sec=>{
     const container = document.getElementById('q-section-'+sec);
@@ -498,9 +566,32 @@ function renderQuestions(){
   ACCOUNTS.forEach((acc,i)=>{
     const tr = document.createElement('tr');
     tr.innerHTML = `<td class="acct-name">${acc}</td>
+      <td><input type="text" id="acct-ar-${i}" placeholder="الاسم بالعربي" dir="rtl"></td>
       <td><input type="text" id="acct-type-${i}" placeholder="e.g. Asset / Liability / Expense"></td>`;
     tbody.appendChild(tr);
   });
+
+  const coaBody = document.getElementById('coa-table-body');
+  CHART_OF_ACCOUNTS.forEach(a=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${a.no}</td><td>${a.name}</td>`;
+    coaBody.appendChild(tr);
+  });
+
+  function renderJETable(bodyId, prefix){
+    const body = document.getElementById(bodyId);
+    for(let r=0; r<JE_ROWS; r++){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" id="${prefix}-acct-${r}" placeholder="e.g. 201"></td>
+        <td><input type="text" id="${prefix}-debit-${r}" placeholder="—"></td>
+        <td><input type="text" id="${prefix}-credit-${r}" placeholder="—"></td>
+      `;
+      body.appendChild(tr);
+    }
+  }
+  renderJETable('je-periodic-body', 'periodic');
+  renderJETable('je-perpetual-body', 'perpetual');
 }
 renderQuestions();
 
@@ -736,10 +827,21 @@ function finishExam(reason){
     });
   });
 
-  const periodic = document.getElementById('ans-periodic').value.trim();
-  const perpetual = document.getElementById('ans-perpetual').value.trim();
+  function collectJE(prefix){
+    const rows = [];
+    for(let r=0; r<JE_ROWS; r++){
+      const acct = document.getElementById(`${prefix}-acct-${r}`).value.trim();
+      const debit = document.getElementById(`${prefix}-debit-${r}`).value.trim();
+      const credit = document.getElementById(`${prefix}-credit-${r}`).value.trim();
+      if(acct || debit || credit) rows.push({account_no: acct, debit, credit});
+    }
+    return rows;
+  }
+  const periodic = collectJE('periodic');
+  const perpetual = collectJE('perpetual');
   const acctTable = ACCOUNTS.map((acc,i)=>({
     account: acc,
+    arabic: document.getElementById('acct-ar-'+i).value.trim(),
     type: document.getElementById('acct-type-'+i).value.trim()
   }));
 
@@ -785,7 +887,7 @@ function finishExam(reason){
     submitted_reason: reasonLabel,
     submitted_at: new Date().toISOString(),
     time_taken_seconds: elapsedSec,
-    mcq_score: `${score}/15`,
+    mcq_score: `${score}/20`,
     mcq_review: review,
     violations_count: violations,
     violations_log: violationLog,
