@@ -106,6 +106,11 @@
   table.acct.coa td{ padding:7px 10px; direction:ltr; text-align:left; font-family:var(--mono); font-size:13px; }
   table.acct.je td{ padding:0; }
   table.acct.je input{ text-align:center; direction:ltr; }
+  table.acct.je select{
+    width:100%; border:none; padding:8px 6px; font-family:inherit; font-size:13px;
+    background:transparent; direction:ltr; color:var(--ink);
+  }
+  table.acct.je select:focus{ outline:2px solid var(--brass); outline-offset:-2px; background:#fffdf5; }
   table.acct.je th{ text-align:center; }
   table.acct.je th:first-child{ text-align:left; }
 
@@ -580,10 +585,12 @@ function renderQuestions(){
 
   function renderJETable(bodyId, prefix){
     const body = document.getElementById(bodyId);
+    const optionsHtml = '<option value="">—</option>' +
+      CHART_OF_ACCOUNTS.map(a=>`<option value="${a.no}">${a.no} — ${a.name}</option>`).join('');
     for(let r=0; r<JE_ROWS; r++){
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><input type="text" id="${prefix}-acct-${r}" placeholder="e.g. 201"></td>
+        <td><select id="${prefix}-acct-${r}">${optionsHtml}</select></td>
         <td><input type="text" id="${prefix}-debit-${r}" placeholder="—"></td>
         <td><input type="text" id="${prefix}-credit-${r}" placeholder="—"></td>
       `;
